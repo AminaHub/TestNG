@@ -15,7 +15,8 @@ public class priorityExampleTwo extends CommonMethods{
 	public void setUp() {
 		setUpDriver("chrome", "https://www.saucedemo.com/");
 		boolean swagLabs = driver.findElement(By.xpath("//title[text()='Swag Labs']")).isDisplayed();
-		  if(swagLabs=true) {        System.out.println("This is the right title");    
+		  if(swagLabs=true) {        
+			  System.out.println("This is the right title");    
 		  }else {        
 			  System.out.println("This is the wrong title");    
 		  }

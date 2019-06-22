@@ -1,20 +1,34 @@
 package utils;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.NoSuchFrameException;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class CommonMethods {   
 	public static WebDriver driver;
+	
+	/**
+	 * This method will start a web browser
+	 * @author Syntax
+	 * @param String browser, String url
+	 */
 
 	public static void setUpDriver(String browser, String url) {
 		if (browser.equalsIgnoreCase("chrome")) {
@@ -27,7 +41,7 @@ public class CommonMethods {
 			driver = new ChromeDriver();
 		} else if (browser.equalsIgnoreCase("firefox")) {
 			//System.setProperty("webdriver.gecko.driver", "//C://Users//NZeki//Selenium//geckodriver.exe");
-			System.setProperty("webdriver.gecko.driver", "src/drivers/geckodriver");
+			System.setProperty("webdriver.gecko.driver", "src/drivers/geckodriver.exe");
 			driver = new FirefoxDriver();
 		} else {
 			System.out.println("browser given is wrong");
@@ -36,7 +50,7 @@ public class CommonMethods {
 		driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
 		driver.manage().window().maximize();
 		driver.get(url);
-		// driver.manage().window().maximize();
+	
 	}
 
 	/**
@@ -53,11 +67,10 @@ public class CommonMethods {
 			String optionText = option.getText();
 			if (optionText.equals(text)) {
 				select.selectByVisibleText(text);
-				System.out.println("Option with text " + text + " is selected");
 				isSelected = true;
 				break;
 			} else {
-				System.out.println("Option with text " + text + " is not available");
+				//System.out.println(text + " is not available");
 			}
 		}
 		if (!isSelected) {
@@ -66,6 +79,22 @@ public class CommonMethods {
 
 	}
 	
+	/**
+	 * 
+	 * This method will click on a WebElement 
+	 * @author Amina
+	 *
+	 */
+
+	public static void click(WebElement element) {
+		element.click();
+	}
+	
+	/**
+	 * 
+	 * Method will select value from dropdown box - Webelement and integer
+	 * 
+	 */
 	public static void selectValueFromDD(WebElement element, int index) {        
 		Select select = new Select(element);        
 		List<WebElement> options = select.getOptions();        
@@ -76,11 +105,19 @@ public class CommonMethods {
 		}    
 	}        
 	
+	
+	/**
+	 * 
+	 * Method will send text to an element - WebElement and a String
+	 * 
+	 */
 	public static void sendText(WebElement element, String value) {        
 		element.clear();        
 		element.sendKeys(value);    
 	}
 
+	
+	
 	/**
 	 * 
 	 * Method will accept alert
@@ -97,6 +134,8 @@ public class CommonMethods {
 		}
 	}
 
+	
+	
 	/**
 	 * 
 	 * Method will dismiss alert
@@ -112,6 +151,8 @@ public class CommonMethods {
 		}
 	}
 
+	
+	
 	/**
 	 * 
 	 * Method will get text of an alert
@@ -130,6 +171,8 @@ public class CommonMethods {
 		}
 	}
 
+	
+	
 	/**
 	 * 
 	 * Method that will switch control to the specified frame
@@ -145,6 +188,8 @@ public class CommonMethods {
 		}
 	}
 
+	
+	
 	/**
 	 *
 	 * Method that will switch control to the specified frame
@@ -160,6 +205,8 @@ public class CommonMethods {
 		}
 	}
 
+	
+	
 	/**
 	 *
 	 * Method that will switch control to the specified frame
@@ -175,6 +222,166 @@ public class CommonMethods {
 		}
 
 	}
+	
+	
+	
+	/**
+	 *
+	 * Method that will verify 2 strings
+	 * @Author Amina
+	 *
+	 */
+
+	public static void verify(String inBoxElement, String expectedElement) {
+		if(!inBoxElement.equals(expectedElement)) {
+			System.out.println(expectedElement+" is Dislayed");
+		}else {
+			System.out.println(expectedElement+" Is not Displayed");
+		}
+	}	
+	
+	
+	/**
+	 *
+	 * Method that will select Radio Buttons 2 strings
+	 * @Author Amina
+	 *
+	 */
+	public static void selectRadioButton(String str1, String str2) {
+		WebElement radiobtn=driver.findElement(By.xpath(str1));
+		String valueToSelect = str2;
+		List<WebElement> radioList = driver.findElements(By.xpath(str1));
+		//System.out.println(radioList.size());
+		for (WebElement status : radioList) {
+			if (status.isEnabled()) {
+				String value = status.getText();
+				if (value.equals(valueToSelect)) {
+					status.click();
+					break;
+				}else {
+					System.out.println("Radio Button is no slected");
+				}
+			}
+	
+		}
+	}	
+	
+	
+	
+	/**
+	 *
+	 * Method that will select Check Boxes 2 strings
+	 * @Author Amina
+	 *
+	 */
+	public static void selectCheckBoxes(String str1, String str2) {
+		WebElement checkBox=driver.findElement(By.xpath(str1));
+		String valueToSelect = str2;
+		List<WebElement> list = driver.findElements(By.xpath(str1));
+		//System.out.println(list.size());
+			for (WebElement status : list) {
+				if (status.isEnabled()) {
+					String value = status.getText();
+					if (value.equals(valueToSelect)) {
+						if(!status.isSelected()) {
+							status.click();
+							break;
+						}else {
+							System.out.println("Checkbox is selected by default");
+						}	
+					}
+				}else {
+					System.out.println("Check box is not selected");
+				}
+		
+			}
+	}		
+			
+	/**
+	 *
+	 * Method that will select drop down  2 strings
+	 * @Author Amina
+	 *
+	 */
+	public static void dropDownSelect(String str1, String str2) {
+		WebElement DDList = driver.findElement(By.xpath(str1));
+		Select select = new Select(DDList);
+		select.selectByVisibleText(str2);
+	}
+	
+	/**
+	 *
+	 * Method that will select Calendar date 2 strings
+	 * @Author Amina
+	 *
+	 */
+	
+	public static void selectCalendarDate(String str, String str1) {
+		List<WebElement> getCalanderCells= driver.findElements(By.xpath(str));
+		for(WebElement cell:getCalanderCells) {
+			String date=cell.getText();
+			if(date.equals(str1)) {
+				cell.click();
+				break;
+			}
+		}
+	}
+	
+	
+	public static void takeScreenshot(String folderName, String fileName) {
+		TakesScreenshot ts=(TakesScreenshot)driver;
+		File scr=ts.getScreenshotAs(OutputType.FILE);
+    
+		try {
+			FileUtils.copyFile(scr, new File("screenshots/"+folderName+"/"+fileName+".png"));
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.out.println("Unable to take screesnhot");
+		}
+	}
+
+	public static void scrollDown(int pixels) {
+		JavascriptExecutor js=(JavascriptExecutor)driver;
+		js.executeScript("window.scrollBy(0,"+pixels+")");
+	}
+
+	public static void scrollUp(int pixels) {
+		JavascriptExecutor js=(JavascriptExecutor)driver;
+		js.executeScript("window.scrollBy(0,-"+pixels+")");
+	}
+
+	public static void jsClick(WebElement element) {
+		JavascriptExecutor js=(JavascriptExecutor)driver;
+		js.executeScript("arguments[0].click();",element);
+	
+	}
+
+	public static void waitForElementBeVisible(WebElement element, int time)  {
+		WebDriverWait wait =new WebDriverWait (driver, time);
+		wait.until(ExpectedConditions.visibilityOf(element));
+		 
+	 }
+	   
+	public static void waitForElementBeVisible(By locator, int time)  {
+		WebDriverWait wait =new WebDriverWait (driver, time);
+		wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
+			 
+		 }
+		    
+	   
+	public static void waitForElementBeClickable(WebElement element, int time)  {
+		WebDriverWait wait =new WebDriverWait (driver, time);
+		wait.until(ExpectedConditions.elementToBeClickable(element));
+			 
+		 }
+		    
+	public static void waitForElementBeClickable(By locator, int time)  {
+		WebDriverWait wait =new WebDriverWait (driver, time);
+		wait.until(ExpectedConditions.elementToBeClickable(locator));
+			 
+		 }   
 
 }
+	
+
 
